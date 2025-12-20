@@ -1,26 +1,29 @@
 from pymongo import MongoClient
 import os
+import random
+
 from dotenv import load_dotenv
-
-# naloži .env
 load_dotenv()
+from censor import *
 
-# preberi connection string
 uri = os.getenv("MDB_CONNECTION_STRING")
 if not uri:
     raise RuntimeError("MDB_CONNECTION_STRING ni nastavljen!")
 
-# poveži se na MongoDB
 client = MongoClient(uri)
-db = client["KimBotUn"]          # izberi bazo
-socials = db["Socials"]          # izberi kolekcijo
+db = client["KimBotUn"]
+socials = db["Socials"]
+quotes = db["Kim_quotes"]
+warnings_table = db["Warnings"]
 
-
-
-def get_or_create_member(user_id, warning_number=0, score_deduction=0):
+def get_or_create_member(message, warning_number=0, score_deduction=0):
     """
     Search user by id. If it doesnt exist, create it.
     """
+
+    user_id = message.author.id
+    guild_id = message.guild.id if message.guild else None  # or None
+
     member = socials.find_one({
         "user_id": user_id
     })
@@ -30,11 +33,12 @@ def get_or_create_member(user_id, warning_number=0, score_deduction=0):
     
     # Create user
     
-    username = "TODO"
+    username = message.author.name
     score = 200 - score_deduction
 
     new_member = {
         "user_id": user_id,
+        "guild_id": guild_id,
         "username": username,
         "score": score,
         "warnings": warning_number,
@@ -44,11 +48,76 @@ def get_or_create_member(user_id, warning_number=0, score_deduction=0):
     return new_member
 
 
-user_id = 1234567890
-username = "LeonSturm"
+def quote_generator():
 
-member = get_or_create_member(user_id, username)
-print(member)
+    total_quotes = quotes.count_documents({})
+
+    random_quote_id = random.randint(1, total_quotes)
+    random_quote = quotes.find_one({"id": random_quote_id})
+
+    while True:
+        random_quote = quotes.find_one({"id": random_quote_id})
+
+        yield random_quote
+
+        random_quote_id += 1
+        if random_quote_id > total_quotes:
+            random_quote_id = 1
+        
+quote_gen = quote_generator()
+
+def get_random_Kim_quote():
+    return next(quote_gen)["quote"]
+
+
+def is_user_first_warning(message):
+    """
+    Returns user's score
+    """
+    author_profile = get_or_create_member(message) 
+    return (author_profile["score"], author_profile["warnings"])
+
+def deduct_user_score_n_increase_warnings(author_id, penalty, new_warning):
+    socials.update_one(
+        {"user_id": author_id},
+        {
+            "$inc": {"score": -penalty},
+            "$inc": {"warnings": new_warning}
+        }
+    )
+
+
+
+async def check_n_do_censoring(message):
+    msg_words = message.content.split()
+    is_match_found = False
+
+    for words_pair_to_censor, (id, penalty, case_sensitive) in censor.items():
+        if case_sensitive:
+            if all(word in msg_words for word in words_pair_to_censor):
+                is_match_found = True
+        else:
+            lower_msg_words = [word.lower() for word in msg_words]
+            if all(word in lower_msg_words for word in words_pair_to_censor):
+                is_match_found = True
+
+        if is_match_found:
+            appropriate_warnings = list(warnings_table.find({"id": id}))
+            warning_to_give = random.choice(appropriate_warnings)
+
+            user_social_score, user_warnings = is_user_first_warning(message)
+            
+            if user_warnings > 0:
+                await message.reply(warning_to_give["text"] + "\n" * 2 + "**Your current social score is {user_social_score}.**")
+            else:
+                await message.reply(warning_to_give["text"] + "\n" * 2 + "**This is your first and last warning before i start deducting you social score.**")
+                penalty = 0
+            deduct_user_score_n_increase_warnings(message.author.id, penalty, +1)   
+
+            is_match_found = False
+
+
+
 
 
 
