@@ -29,5 +29,7 @@ censor = {
     ("iphone",): (15, 10, False),
 
     # --- I THINK ---
-    ("i", "think"): (16, 10, False)
+    ("i", "think"): (16, 10, False),
+    # --- GAZA ---
+    ("israel"): (17, 50, False)
 }

@@ -27,3 +27,26 @@ Attention, farmers.
 May their fields be productive, their animals punctual,
 and their barn audits… uneventful.
             """
+
+score_naming = {
+    20: "⭐👑 KimBot’s Most Loyal Comrade",
+    19: "🌟 Kim Family Loyalist",
+    18: "⭐🚜 Beloved Leader of the Harvest",
+    17: "🌱💠 Eternal Comrade of the Fields",
+    16: "🌽🐖 Marshal of Corn and Pigs",
+    15: "📜🔥 Propaganda Icon",
+    14: "🌾🥇 Champion of the Collective",
+    13: "🌟 Juche Revolutionary",
+    12: "🔹 Loyalty and Obedience Personalized",
+    11: "🚜 Dedicated Farmer",
+    10: "🏡 Model Citizen",
+    9: "🔹 Trusted Comrade",
+    8: "⚠️ Ideologically Unstable",
+    7: "🔺 Questionable Element",
+    6: "❌ Disloyal Citizen",
+    5: "☢️ Counter-Revolutionary rat",
+    4: "🐖 Derelict Farmhand",
+    3: "🪓 Saboteur",
+    2: "💀 Enemy of the People",
+    1: "☠️ Traitor to the State"
+}

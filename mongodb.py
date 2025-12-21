@@ -16,6 +16,11 @@ socials = db["Socials"]
 quotes = db["Kim_quotes"]
 warnings_table = db["Warnings"]
 
+
+def get_all_users():
+    return list(socials.find({}).sort("score", -1))
+
+
 def get_or_create_member(message, warning_number=0, score_deduction=0):
     """
     Search user by id. If it doesnt exist, create it.
@@ -78,11 +83,14 @@ def is_user_first_warning(message):
     return (author_profile["score"], author_profile["warnings"])
 
 def deduct_user_score_n_increase_warnings(author_id, penalty, new_warning):
+    print("penalty:", penalty)
     socials.update_one(
         {"user_id": author_id},
         {
-            "$inc": {"score": -penalty},
-            "$inc": {"warnings": new_warning}
+            "$inc": {
+                "score": -penalty,
+                "warnings": new_warning
+            }
         }
     )
 
@@ -106,13 +114,13 @@ async def check_n_do_censoring(message):
             warning_to_give = random.choice(appropriate_warnings)
 
             user_social_score, user_warnings = is_user_first_warning(message)
-            
+
             if user_warnings > 0:
-                await message.reply(warning_to_give["text"] + "\n" * 2 + "**Your current social score is {user_social_score}.**")
+                deduct_user_score_n_increase_warnings(message.author.id, penalty, +1)
+                await message.reply(warning_to_give["text"] + "\n" * 2 + f"**Your current social score is {user_social_score - penalty}.**")
             else:
-                await message.reply(warning_to_give["text"] + "\n" * 2 + "**This is your first and last warning before i start deducting you social score.**")
-                penalty = 0
-            deduct_user_score_n_increase_warnings(message.author.id, penalty, +1)   
+                deduct_user_score_n_increase_warnings(message.author.id, 0, +1)
+                await message.reply(warning_to_give["text"] + "\n" * 2 + "**This is your first and last warning before i start deducting you social score.**")  
 
             is_match_found = False
 

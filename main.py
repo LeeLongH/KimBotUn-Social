@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from northkorea import *
 from mongodb import *
 from long_texts import *
 
@@ -18,9 +17,22 @@ WELCOME_CHANNEL_ID = 1451924198137008289
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-""" @bot.command()
-async def hello(ctx):
-    await ctx.send("Hello World!") """
+@bot.command()
+async def score(ctx):
+    score = get_or_create_member(ctx.message)["score"] 
+    await ctx.reply(f"Your score is {score}")
+
+@bot.command()
+async def allscore(ctx):
+    all_users = get_all_users()
+    output_lines = []
+    for user in all_users:
+        guild = bot.get_guild(user["guild_id"])
+        member = guild.get_member(user["user_id"])
+        nickname = member.nick or member.name
+        user_score = user['score']
+        output_lines.append(f"{nickname:>15} : {user_score} ({score_naming[user_score//20]})") 
+    await ctx.reply("```\n" + "\n".join(output_lines) + "\n```")
 
 @bot.event
 async def on_message(message):
