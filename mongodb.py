@@ -1,6 +1,8 @@
 from pymongo import MongoClient
 import os
 import random
+import ssl
+import certifi
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -10,7 +12,11 @@ uri = os.getenv("MDB_CONNECTION_STRING")
 if not uri:
     raise RuntimeError("MDB_CONNECTION_STRING ni nastavljen!")
 
-client = MongoClient(uri)
+client = MongoClient(uri,     
+                    tls=True,
+                    tlsCAFile=certifi.where()
+)
+
 db = client["KimBotUn"]
 socials = db["Socials"]
 quotes = db["Kim_quotes"]
@@ -135,3 +141,9 @@ async def check_n_do_censoring(message):
 #all_docs = list(socials.find({}))   # prazni filter = vsi dokumenti
 
 
+""" 
+                    tls=True,
+                    tlsAllowInvalidCertificates=False,
+                    tlsVersion=ssl.PROTOCOL_TLSv1_2
+                    ) 
+                    """

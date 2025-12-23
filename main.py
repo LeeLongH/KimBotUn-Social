@@ -17,6 +17,12 @@ WELCOME_CHANNEL_ID = 1451924198137008289
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+@bot.event
+async def on_ready():
+    await bot.load_extension("Moderation")
+    print(f"Logged in as {bot.user}")
+
+
 @bot.command()
 async def score(ctx):
     score = get_or_create_member(ctx.message)["score"] 
@@ -36,12 +42,21 @@ async def allscore(ctx):
 
 @bot.event
 async def on_message(message):
-    if message.author == bot.user:
+    if message.guild.id != 1450516692324061320:
         return
 
-    #get_or_create_member(message) 
+    if message.author == bot.user:
+        return
     
-    await check_n_do_censoring(message)
+    if message.content == "a":
+        mod_cog = bot.get_cog("cogs.moderation")
+        await mod_cog.mute_member(
+            message.author,
+            minutes=1,
+            reason="Auto-mute: typed 'a'"
+        )
+
+    #await check_n_do_censoring(message)
 
     # Make sure commands still work
     await bot.process_commands(message)
@@ -50,14 +65,13 @@ async def on_message(message):
 @bot.event
 async def on_member_join(member):
     
-    
     channel = member.guild.get_channel(WELCOME_CHANNEL_ID)
     if channel:
         await channel.send(welcome_message_public(member.mention) + "\n" + get_random_Kim_quote())
     else:
         print("SYS: Cannot get welcome channel")
 
-    # OPTION 2: Send a DM to the user
+    # DM to the user
     try:
         await member.send(welcome_message_dm(member.mention))
     except discord.Forbidden:
