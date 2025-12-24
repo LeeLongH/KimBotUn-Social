@@ -25,8 +25,7 @@ async def on_ready():
 
 @bot.command()
 async def score(ctx):
-    score = get_or_create_member(ctx.message)["score"] 
-    await ctx.reply(f"Your score is {score}")
+    await get_user_score(ctx)
 
 @bot.command()
 async def allscore(ctx):
@@ -56,7 +55,7 @@ async def on_message(message):
             reason="Auto-mute: typed 'a'"
         )
 
-    #await check_n_do_censoring(message)
+    await check_n_do_censoring(message)
 
     # Make sure commands still work
     await bot.process_commands(message)

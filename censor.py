@@ -31,5 +31,14 @@ censor = {
     # --- I THINK ---
     ("i", "think"): (16, 10, False),
     # --- GAZA ---
-    ("israel"): (17, 50, False)
+    ("israel",): (17, 50, False),
+
+
+
+
+    # --- INCRREASING SCORE ---
+    ("israhell",): (100, -10, False),
+    ("isnotreal",): (100, -10, False),
+    ("dprk",): (100, -10, False)
+
 }
