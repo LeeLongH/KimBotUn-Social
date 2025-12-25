@@ -17,9 +17,9 @@ Remember, Idle farm invites questions!
             """
 
 def welcome_message_public(member_name):
-    return f""" :ear_of_rice: Public Welcome
+    return f"""# :ear_of_rice: Public Welcome
 
-:sunflower: A New Worker Enters the Valley :sunflower:
+:sunflower: A New Worker Enters the Commune :sunflower:
 
 Attention, farmers.
 {member_name} has arrived and has been assigned a plot, a purpose, and a quota.
@@ -50,3 +50,31 @@ score_naming = {
     2: "💀 Enemy of the People",
     1: "☠️ Traitor to the State"
 }
+
+mute_timing = {
+    17: 0.1,
+    16: 0.2,
+    15: 0.5,
+    14: 1,
+    13: 1.5,
+    12: 2,
+    11: 3,
+    10: 4,
+    9: 5,
+    8: 6,
+    7: 8,
+    6: 10,
+    5: 20,
+    4: 30,
+    3: 40,
+    2: 50,
+    1: 60 
+}
+
+
+BOT_VERSION = \
+"""
+            2.0 - delete messages below score 100
+(current)   1.1 - scoring and muting adjusted, IC excluded from muting
+            1.0 - working bot with muting ability
+"""
