@@ -99,3 +99,31 @@ score_naming = {
     2: "☠️☠️☠️ Traitor to the State",
     1: "☠️☠️☠️ Ultimate Traitor to the State"
 }
+
+
+leave_reasons = [
+    "COMPLIANCE FAILURE DETECTED: Preventative measures have taken place against {username} who is no longer with us.",
+    "Attention all members: {username} believed individuality was permitted. This misconception has been corrected by removing {username} from the server.",
+    "{username} tried Defecting from our Glorious server, and failed miserably.",
+    "🟥 DISCIPLINARY NOTICE 🟥: {username} has violated DPRK doctrine thus has been removed from the collective.",
+    "🚨 WARNING TO ALL 🚨: {username} believed escape was possible. {username} has betrayed The Supreme leader and was liquidated.",
+    "⚖️ UNANIMOUS VERDICT ⚖️: {username} was found guilty of disobedience and was sent to reeducation camp with his entire family.",
+    "🔒 {username} failed their final loyalty evaluation. Reassignment to a reeducation camp has been approved.",
+    "🛑 TRAITOR IDENTIFIED 🛑: {username} has been removed for ideological contamination. {username} is no longer with us.",
+    "🟥 RECORD UPDATE 🟥: {username} showed weakness of character and was removed from the server.",
+    "⚖️ The Council has ruled that {username} is unworthy of continued membership is this Glorious server.",
+    "📡 BROADCAST INTERRUPTION 📡: {username} is no longer part of the state-approved population.",
+    "🛑 WARNING TO ALL MEMBERS 🛑: {username} dreamt of Desertion. We made sure he disappeared and We wont be seeing {username} around anymore.",
+    "🚨 Citizen {username} attempted independent thinking and has been dealt with accordingly. {username} is no longer with us",
+    "🟥 FINAL DECREE 🟥: Citizen {username} has committed irreversible betrayal. {username} has 'unexpectedly' and 'tragically' passed away.",
+    "LET IT BE KNOWN: {username} is no longer with us for not being worthy of Our server."
+    "⚠️ PUBLIC WARNING ⚠️: {username} abandoned the collective. Let {username}'s expulsion serve as an example",
+    "📜 OFFICIAL STATEMENT: {username} has voluntarily removed themselves from the Glorious Collective. {username} wouldnt last anyway.",
+    "🟥 {username} has failed the loyalty test and has been removed from the community.",
+    "📢 Supreme Command announces that {username} has shown weakness and tried to flee - unsuccessfully. Loyalty will be rewarded. Defection will not.",
+    "⚠️ TRAITOR ALERT ⚠️: Traitor {username} has abandoned the server and will be erased from official records.",
+    "FINAL NOTICE: {username} attempted to leave. We purged {username} out of existence.",
+    "📡 OFFICIAL BROADCAST 📡 {username} has been dealt with. Loyalty remains mandatory.",
+    "{username} has no manners and deserved to be forcefully removed out from the server",
+    "{username}'s membership has been revoked thus was removed from the server"
+]

@@ -15,6 +15,9 @@ intents.members = True
 WELCOME_CHANNEL_ID = 1451924198137008289       # TESTing
 #WELCOME_CHANNEL_ID = 1389679104915406984
 
+#GENERAL_CHAT_ID = 1389679104915406984
+GENERAL_CHAT_ID_TEST = 1451924198137008289      # TESTing
+
 bot = commands.Bot(command_prefix="/", intents=intents)
 
 @bot.command()
@@ -32,28 +35,7 @@ async def score(ctx):
 
 @bot.command()
 async def allscore(ctx):
-    all_users = fun.get_all_users()
-    output_lines = []
-    for user in all_users:
-
-        guild = bot.get_guild(user["guild_id"])
-        if guild is None:
-            try:
-                guild = await bot.fetch_guild(user["guild_id"])
-            except discord.NotFound:
-                continue
-
-        member = guild.get_member(user["user_id"])
-        if member is None:
-            try:
-                member = await guild.fetch_member(user["user_id"])
-            except discord.NotFound:
-                output_lines.append(f"{user['user_id']:>15} : Member not found")
-                continue
-
-        nickname = member.nick or member.name
-        user_score = user['score']
-        output_lines.append(f"{nickname[0:15]:>15} : {user_score} ({score_naming[user_score//10]})") 
+    output_lines = await fun.print_all_score(bot)
     await ctx.reply("```\n" + "\n".join(output_lines) + "\n```")
 
 @bot.event
@@ -71,7 +53,7 @@ async def on_message(message):
 
 @bot.event
 async def on_member_join(member):
-    
+   
     channel = member.guild.get_channel(WELCOME_CHANNEL_ID)
     if channel:
         await channel.send(welcome_message_public(member.mention) + "\n" + fun.get_random_Kim_quote())
@@ -83,6 +65,13 @@ async def on_member_join(member):
         await member.send(welcome_message_dm(member.mention))
     except discord.Forbidden:
         print("SYS: user has DMs closed")
+
+@bot.event
+async def on_member_remove(member):
+    channel = member.guild.get_channel(GENERAL_CHAT_ID_TEST)
+    await channel.send(f"👋 {member.mention} has left the server.")
+    await channel.send(await fun.member_left(member))
+
 
 bot.run(TOKEN)
 

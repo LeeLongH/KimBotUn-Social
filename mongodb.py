@@ -25,6 +25,7 @@ socials = db["Socials"]
 quotes = db["Kim_quotes"]
 warnings_table = db["Warnings"]
 mute_reasons = db["Mute_reasons"]
+leave_reasons = db["Leave_reasons"]
 
 CREW_GUILD_ID = 1450516692324061320        # TESTING
 #CREW_GUILD_ID = 1389679097692815613
@@ -123,7 +124,7 @@ def get_or_create_member(message, warning_number=0, score_deduction=0):
 def mongodb_generator(collection_name):
 
     total_entries = collection_name.count_documents({})
-    random_entry_id = random.randint(1, total_entries)
+    random_entry_id = random.randint(0, total_entries)
 
     while True:
         random_entry = collection_name.find_one({"id": random_entry_id})
@@ -136,6 +137,7 @@ def mongodb_generator(collection_name):
         
 quote_gen = mongodb_generator(quotes)
 mute_reason_gen = mongodb_generator(mute_reasons)
+leave_reason_gen = mongodb_generator(leave_reasons)
 
 def get_random_Kim_quote():
     return next(quote_gen)["quote"]
@@ -178,9 +180,6 @@ async def deduct_user_score_n_increase_warnings(bot, author_id, penalty, new_war
     counted_pro_nk = False
     if pro_nk_word:
         counted_pro_nk = pro_nk_word_already_counted_today(author_id, pro_nk_word)
-
-    print("pr", pro_nk_word, "c", counted_pro_nk, "p", penalty)
-
 
     # DEDUCT SCORE  
     if not counted_pro_nk:
@@ -257,6 +256,42 @@ async def delete_this_message(message):
     
     print("blacklist, anyone_blacklisted: ", blacklist, anyone_blacklisted)
     await message.delete()
+
+async def print_all_score(bot):
+    all_users = get_all_users()
+
+    output_lines = []
+
+    for user in all_users:
+
+        guild = bot.get_guild(user["guild_id"])
+        if guild is None:
+            try:
+                guild = await bot.fetch_guild(user["guild_id"])
+            except discord.NotFound:
+                continue
+
+        member = guild.get_member(user["user_id"])
+        if member is None:
+            try:
+                member = await guild.fetch_member(user["user_id"])
+            except discord.NotFound:
+                continue
+
+        nickname = member.nick or member.name
+        user_score = user['score']
+        output_lines.append(f"{nickname[0:15]:>17} : {user_score} ({score_naming[user_score//10]})") 
+    return output_lines
+
+
+async def member_left(member):
+    #user_record = socials.find_one({"user_id": member.id})
+    
+    leave_reason = next(leave_reason_gen)["reason"].format(username=member.name)
+    mute_reason = next(mute_reason_gen)["reason"].format()
+
+    return f"{leave_reason}\nREASON: {mute_reason}"
+
 
 
 
