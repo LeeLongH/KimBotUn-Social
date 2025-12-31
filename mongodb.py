@@ -20,15 +20,14 @@ client = MongoClient(uri)
 anyone_blacklisted = False
 blacklist = []
 
-
 db = client["KimBotUn"]
 socials = db["Socials"]
 quotes = db["Kim_quotes"]
 warnings_table = db["Warnings"]
 mute_reasons = db["Mute_reasons"]
 
-#CREW_GUILD_ID = 1450516692324061320        # TESTING
-CREW_GUILD_ID = 1389679097692815613
+CREW_GUILD_ID = 1450516692324061320        # TESTING
+#CREW_GUILD_ID = 1389679097692815613
 
 async def fetch_user_guild(message, bot):
     guild = message.guild or bot.get_guild(CREW_GUILD_ID)
@@ -45,7 +44,7 @@ async def fetch_member(guild, user_id):
     return member
 
 def can_mute_member(member, Imperial_Council_ID):
-    return member.top_role < member.guild.me.top_role and member.guild.me.guild_permissions.moderate_members and Imperial_Council_ID != 1451924198137008289
+    return member.top_role < member.guild.me.top_role and member.guild.me.guild_permissions.moderate_members and Imperial_Council_ID != 1389679105850478808
 
 async def mute_member(bot, message, user_id, time_to_mute, reason=None):
     # Fetch guild and member
@@ -152,8 +151,8 @@ def get_score_n_warnings(message):
 def random_mute_reason():
     return next(mute_reason_gen)["reason"]
 
-def increase_score(author_id, pro_nk_word):
-    now = datetime.now().replace(minute=0, second=0, microsecond=0)
+def increase_pro_nk_words(author_id, pro_nk_word):
+    now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     socials.update_one(
         {"user_id": author_id},
             {
@@ -162,22 +161,45 @@ def increase_score(author_id, pro_nk_word):
             upsert=True
     )
 
+
+def pro_nk_word_already_counted_today(author_id, pro_nk_word):
+
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
+    return socials.find_one(
+                                {
+                                    "user_id": author_id,
+                                    f"pro_nk_words.{pro_nk_word}.dates": today
+                                },
+                            ) is not None
+
 async def deduct_user_score_n_increase_warnings(bot, author_id, penalty, new_warning, message, pro_nk_word):
-    #print("penalty:", penalty)
-    socials.update_one(
-        {"user_id": author_id},
-        {
-            "$inc": {
-                "score": -penalty,
-                "warnings": new_warning
+    
+    counted_pro_nk = False
+    if pro_nk_word:
+        counted_pro_nk = pro_nk_word_already_counted_today(author_id, pro_nk_word)
+
+    print("pr", pro_nk_word, "c", counted_pro_nk, "p", penalty)
+
+
+    # DEDUCT SCORE  
+    if not counted_pro_nk:
+        socials.update_one(
+            {"user_id": author_id},
+            {
+                "$inc": {
+                    "score": -penalty,
+                    "warnings": new_warning
+                }
             }
-        }
-    )
+        )
+
+        
+    # INFLICT PUNISHMENT
     if penalty > 1 and message:
         member = get_or_create_member(message)
         score = member["score"]
         if score < 100:
-            print("blacklist zto True")
             blacklist.append(member["user_id"])
             global anyone_blacklisted
             anyone_blacklisted = True
@@ -188,8 +210,8 @@ async def deduct_user_score_n_increase_warnings(bot, author_id, penalty, new_war
     if penalty >= 0 and not pro_nk_word:
         return
     
-    # --- DPRK, ISRAHELL, ISNOTREAL ---
-    increase_score(author_id, pro_nk_word)
+    # --- PRO NK WORDS ---
+    increase_pro_nk_words(author_id, pro_nk_word)
     
 async def check_n_do_censoring(bot, message):
     msg_words = message.content.split()
@@ -205,7 +227,6 @@ async def check_n_do_censoring(bot, message):
                 is_match_found = True
 
         if is_match_found:
-
             user_social_score, user_warnings = get_score_n_warnings(message)
 
             # Increase user's score if its pro-nk-word
@@ -218,10 +239,12 @@ async def check_n_do_censoring(bot, message):
 
             if user_warnings > 0:
                 await deduct_user_score_n_increase_warnings(bot, message.author.id, penalty, +1, message, "")
-                await message.reply(warning_to_give["text"] + "\n" * 2 + f"**Your current social score is {user_social_score - penalty}.**")
+                if rule_id != 16:
+                    await message.reply(warning_to_give["text"] + "\n" * 2 + f"*Your current social score is {user_social_score - penalty}.*")
             else:
                 await deduct_user_score_n_increase_warnings(bot, message.author.id, 0, +1, message, "")
-                await message.reply("Imaginary state mentioned, educate yourself!" if warning_to_give["text"].startswith("Imaginary state mentioned") else  warning_to_give["text"] + "\n" * 2 + "**This is your first and last warning before i start deducting you social score.**")  
+                if rule_id != 16:
+                    await message.reply("Imaginary state mentioned, educate yourself!" if warning_to_give["text"].startswith("Imaginary state mentioned") else  warning_to_give["text"] + "\n" * 2 + "*This is your first and last warning before i start deducting you social score.*")  
 
 async def delete_this_message(message):
     global anyone_blacklisted
@@ -234,8 +257,12 @@ async def delete_this_message(message):
     
     print("blacklist, anyone_blacklisted: ", blacklist, anyone_blacklisted)
     await message.delete()
+
+
+
 ### DROPDOWN ###
 
 # pridobi vse dokumente
 #all_docs = list(socials.find({}))   # prazni filter = vsi dokumenti
+
 

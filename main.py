@@ -7,15 +7,15 @@ import mongodb as fun
 from long_texts import *
 
 load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
+TOKEN = os.getenv("DISCORD_TOKEN_TEST")
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-#WELCOME_CHANNEL_ID = 1451924198137008289       # TESTing
-WELCOME_CHANNEL_ID = 1389679104915406984
+WELCOME_CHANNEL_ID = 1451924198137008289       # TESTing
+#WELCOME_CHANNEL_ID = 1389679104915406984
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="/", intents=intents)
 
 @bot.command()
 async def version(ctx):
@@ -53,7 +53,7 @@ async def allscore(ctx):
 
         nickname = member.nick or member.name
         user_score = user['score']
-        output_lines.append(f"{nickname:>15} : {user_score} ({score_naming[user_score//20]})") 
+        output_lines.append(f"{nickname[0:15]:>15} : {user_score} ({score_naming[user_score//10]})") 
     await ctx.reply("```\n" + "\n".join(output_lines) + "\n```")
 
 @bot.event

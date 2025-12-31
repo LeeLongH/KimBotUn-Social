@@ -28,29 +28,6 @@ May their fields be productive, their animals punctual,
 and their barn audits… uneventful.
             """
 
-score_naming = {
-    20: "⭐👑 KimBot’s Most Loyal Comrade",
-    19: "🌟 Kim Family Loyalist",
-    18: "⭐🚜 Beloved Leader of the Harvest",
-    17: "🌱💠 Eternal Comrade of the Fields",
-    16: "🌽🐖 Marshal of Corn and Pigs",
-    15: "📜🔥 Propaganda Icon",
-    14: "🌾🥇 Champion of the Collective",
-    13: "🌟 Juche Revolutionary",
-    12: "🔹 Loyalty and Obedience Personalized",
-    11: "🚜 Dedicated Farmer",
-    10: "🏡 Model Citizen",
-    9: "🔹 Trusted Comrade",
-    8: "⚠️ Ideologically Unstable",
-    7: "🔺 Questionable Element",
-    6: "❌ Disloyal Citizen",
-    5: "☢️ Counter-Revolutionary rat",
-    4: "🐖 Derelict Farmhand",
-    3: "🪓 Saboteur",
-    2: "💀 Enemy of the People",
-    1: "☠️ Traitor to the State"
-}
-
 mute_timing = {
     17: 0.1,
     16: 0.2,
@@ -78,3 +55,47 @@ BOT_VERSION = \
 (current)   1.1 - scoring and muting adjusted, IC excluded from muting
             1.0 - working bot with muting ability
 """
+
+
+score_naming = {
+    40: "⭐👑 KimBot Un’s Most Loyal Comrade",
+    39: "⭐👑 KimBot Un’s Loyal Comrade",
+    38: "🌟 Senior Kim Family Loyalist",
+    37: "🌟 Kim Family Loyalist",
+    36: "⭐🚜 Beloved Leader of the Grand Harvest",
+    35: "⭐🚜 Beloved Leader of the Harvest",
+    34: "🔹 Loyalty and Obedience Exemplified",
+    33: "🔹 Loyalty and Obedience Personalized",
+    32: "🌱💠 Eternal Comrade of the Sacred Fields",
+    31: "🌱💠 Eternal Comrade of the Fields",
+    30: "🌽🐖 Supreme Marshal of Corn and Pigs",
+    29: "🌽🐖 Marshal of Corn and Pigs",
+    28: "📜🔥 Revered Propaganda Icon",
+    27: "📜🔥 Propaganda Icon",
+    26: "🌾🥇 Champion of the Collective",
+    25: "🌾🥇 Champion of the Commune",
+    24: "🌟 Honored Juche Revolutionary",
+    23: "🌟 Juche Revolutionary",
+    22: "🏡 Exemplary Model Citizen",
+    21: "🏡 Model Citizen",
+    20: "🚜 Dedicated Farmer",
+    19: "🔺 Questionable Element",
+    18: "🔺 Person of Ideological Concern",
+    17: "♦️Untrustworthy Comrade",
+    16: "♦️Highly Untrustworthy Comrade",
+    15: "⚠️ Ideologically Unstable",
+    14: "⚠️ Severely Ideologically Unstable",
+    13: "❌ Disloyal Citizen",
+    12: "❌ Openly Disloyal Citizen",
+    11: "❌ Persistently Disloyal Citizen",
+    10: "❗❗❗Suspected Puppet regime spy",
+    9: "❗❗❗Puppet regime spy",
+    8: "☢️☢️ Counter-Revolutionary rat",
+    7: "☢️☢️ Confirmed Counter-Revolutionary rat",
+    6: "🪓🪓🪓 Imperialist Disruptor",
+    5: "🪓🪓🪓 Imperialist Saboteur",
+    4: "💀💀 Enemy of the People",
+    3: "💀💀 Declared Enemy of the People",
+    2: "☠️☠️☠️ Traitor to the State",
+    1: "☠️☠️☠️ Ultimate Traitor to the State"
+}
