@@ -1,6 +1,154 @@
+import random
+
+welcome_message_public_list = [
+"""# 🌻 A New Worker Enters the Commune 🌻
+
+Attention, farmers.
+{member_name} has arrived and has been assigned a plot, a purpose, and a quota.
+
+May their fields be productive, their animals punctual,
+and their barn audits… uneventful.
+""",
+"""
+# 🌾 Offical greeting from Kimbot Un 🌾
+
+Glorious salutations, Farmer {member_name}.
+
+Your arrival has been noticed.
+Your farm has been acknowledged.
+Your productivity is anticipated.
+
+You have been granted a plot of land and a chance to contribute meaningfully to the Collective Harvest.
+
+Remember:
+- Idle fields invite concern.
+- Full silos bring honor.
+
+Do not worry if you feel watched.
+That feeling means the system is working.
+
+Farm proudly.
+KimBot Un is satisfied… for now.
+""",
+"""
+# 🌾 Public Welcome 🌾
+
+Welcome, Comrade {member_name}.
+
+You are now part of something bigger than yourself.
+
+Reminder: Wheat is temporary but obedience must be constantly displayed.
+
+Farm while you still can.
+Failure to do that will result in disciplinary actions.
+""",
+"""
+# 🌾Transmission recieved from KimBot Un 🌾
+
+Farmer {member_name} detected.
+Account registered.
+Fields pending inspection.
+
+You have been welcomed into the Cooperative because you were… suitable.
+
+Serve well.
+Harvest often.
+And remember — Loyalty must be shown daily.
+
+Enjoy your stay. :corn:
+""",
+"""
+# 🌾 Official notice — Cooperative registry 🌾
+
+Farmer {member_name}, your presence has been recorded.
+
+Your farm will be evaluated on:
+- Yield consistency
+- Timer obedience
+- Attitude toward the system
+
+Irregular production will be noted.
+Repeated procrastination will be remembered.
+
+And remember, Compliance grows faster than wheat.
+""",
+"""
+# 🌾 Welcome, {member_name} 🌾
+
+You were not randomly selected.
+Your farm was deemed… adequate.
+
+From this moment forward:
+- Your idle machines will be questioned.
+- Your empty fields will raise concern.
+- And your silence will be interpreted as agreement.
+
+May your farming me done in unwavering loyalty to the eternal stability of the Democratic People’s Republic of Korea.
+""",
+"""
+# 🌾A new farmer has joined the Collective 🌾
+
+Greetings, Farmer {member_name}
+
+Your forerunner has disappointed the harvest.
+May your performance satisfy the Collective.
+
+Your performance will be compared and those who fall behind will be re-evaulated”
+
+Now continue farming under Our watchful eye.
+""",
+"""
+# 📢 KimBot Un public notice 📢
+
+Attention, Cooperative.
+
+The Cooperative awaits correction. 
+Farmer {member_name} has not yet been seen tending their fields.
+We trust this is temporary.
+
+Enjoy your stay. :corn:
+""",
+"""
+# 🚨 PRODUCTIVITY ALERT 🚨
+
+Some farmers have failed to report for derby duties.
+
+Crops do not grow themselves.
+
+Let This message serve as encouragement.
+
+And welcome our new member {member_name} who has joined the collective harvest and the social score to measure his competence.
+""",
+"""
+# 🌾 Mandatory welcome directive 🌾
+
+Farmer {member_name}, you are now part of the Cooperative.
+
+Forget democracy here, failure to maintain productivity will result in:
+- Increased monitoring
+- isolation
+- restriction of your 'rights'
+
+Derby participation is optional.
+Explaining absence is not.
+
+Remeber, idle farms attract attention.
+"""
+]
+
+
+
+#- The cows must be milked on schedule.
+
+#Farmer {member_name} continues to test the patience of the Cooperative.
+
+# 🌾 KimBot Un Announces 🌾
+
+
 def welcome_message_dm(member_name):
-    return f""" :ear_of_rice: Welcome to the Cooperative, Farmer {member_name}:ear_of_rice:
-Your arrival has been logged. Your crops are expected.
+    return f"""
+# 🌾 Welcome to the Cooperative, Farmer {member_name}🌾
+Your arrival has been logged. Your crops are required.
 
 You are expected to:
 - Optimize harvest cycles for maximum yield.
@@ -13,25 +161,19 @@ What We appreciate about Hay Day:
 - And the calming certainty that every comrade knows their place.
 
 Enjoy your stay. :corn:
-Remember, Idle farm invites questions! 
-            """
+Remember, idle farm invites questions! 
+"""
 
 def welcome_message_public(member_name):
-    return f"""# :ear_of_rice: Public Welcome
 
-:sunflower: A New Worker Enters the Commune :sunflower:
-
-Attention, farmers.
-{member_name} has arrived and has been assigned a plot, a purpose, and a quota.
-
-May their fields be productive, their animals punctual,
-and their barn audits… uneventful.
-            """
+    #template = random.choice(welcome_message_public_list)
+    template = random.choice(welcome_message_public_list[0], welcome_message_public_list[5])
+    return template.format(member_name=member_name)
 
 mute_timing = {
     17: 0.1,
-    16: 0.2,
-    15: 0.5,
+    16: 0.4,
+    15: 0.7,
     14: 1,
     13: 1.5,
     12: 2,
@@ -48,14 +190,14 @@ mute_timing = {
     1: 60 
 }
 
-
 BOT_VERSION = \
 """
-            2.0 - delete messages below score 100
-(current)   1.1 - scoring and muting adjusted, IC excluded from muting
-            1.0 - working bot with muting ability
+1.3 - !myscore & !score @person1 @person2 @personN
+1.2 - goodbye message
+1.1 - scoring and muting adjusted, IC excluded from muting
+1.0 - working bot with muting ability
 """
-
+#2.0 - delete messages below score 100
 
 score_naming = {
     40: "⭐👑 KimBot Un’s Most Loyal Comrade",
@@ -81,8 +223,8 @@ score_naming = {
     20: "🚜 Dedicated Farmer",
     19: "🔺 Questionable Element",
     18: "🔺 Person of Ideological Concern",
-    17: "♦️Untrustworthy Comrade",
-    16: "♦️Highly Untrustworthy Comrade",
+    17: "♦️ Untrustworthy Comrade",
+    16: "♦️ Highly Untrustworthy Comrade",
     15: "⚠️ Ideologically Unstable",
     14: "⚠️ Severely Ideologically Unstable",
     13: "❌ Disloyal Citizen",
@@ -99,31 +241,3 @@ score_naming = {
     2: "☠️☠️☠️ Traitor to the State",
     1: "☠️☠️☠️ Ultimate Traitor to the State"
 }
-
-
-leave_reasons = [
-    "COMPLIANCE FAILURE DETECTED: Preventative measures have taken place against {username} who is no longer with us.",
-    "Attention all members: {username} believed individuality was permitted. This misconception has been corrected by removing {username} from the server.",
-    "{username} tried Defecting from our Glorious server, and failed miserably.",
-    "🟥 DISCIPLINARY NOTICE 🟥: {username} has violated DPRK doctrine thus has been removed from the collective.",
-    "🚨 WARNING TO ALL 🚨: {username} believed escape was possible. {username} has betrayed The Supreme leader and was liquidated.",
-    "⚖️ UNANIMOUS VERDICT ⚖️: {username} was found guilty of disobedience and was sent to reeducation camp with his entire family.",
-    "🔒 {username} failed their final loyalty evaluation. Reassignment to a reeducation camp has been approved.",
-    "🛑 TRAITOR IDENTIFIED 🛑: {username} has been removed for ideological contamination. {username} is no longer with us.",
-    "🟥 RECORD UPDATE 🟥: {username} showed weakness of character and was removed from the server.",
-    "⚖️ The Council has ruled that {username} is unworthy of continued membership is this Glorious server.",
-    "📡 BROADCAST INTERRUPTION 📡: {username} is no longer part of the state-approved population.",
-    "🛑 WARNING TO ALL MEMBERS 🛑: {username} dreamt of Desertion. We made sure he disappeared and We wont be seeing {username} around anymore.",
-    "🚨 Citizen {username} attempted independent thinking and has been dealt with accordingly. {username} is no longer with us",
-    "🟥 FINAL DECREE 🟥: Citizen {username} has committed irreversible betrayal. {username} has 'unexpectedly' and 'tragically' passed away.",
-    "LET IT BE KNOWN: {username} is no longer with us for not being worthy of Our server."
-    "⚠️ PUBLIC WARNING ⚠️: {username} abandoned the collective. Let {username}'s expulsion serve as an example",
-    "📜 OFFICIAL STATEMENT: {username} has voluntarily removed themselves from the Glorious Collective. {username} wouldnt last anyway.",
-    "🟥 {username} has failed the loyalty test and has been removed from the community.",
-    "📢 Supreme Command announces that {username} has shown weakness and tried to flee - unsuccessfully. Loyalty will be rewarded. Defection will not.",
-    "⚠️ TRAITOR ALERT ⚠️: Traitor {username} has abandoned the server and will be erased from official records.",
-    "FINAL NOTICE: {username} attempted to leave. We purged {username} out of existence.",
-    "📡 OFFICIAL BROADCAST 📡 {username} has been dealt with. Loyalty remains mandatory.",
-    "{username} has no manners and deserved to be forcefully removed out from the server",
-    "{username}'s membership has been revoked thus was removed from the server"
-]

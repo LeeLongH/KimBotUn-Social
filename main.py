@@ -7,18 +7,15 @@ import mongodb as fun
 from long_texts import *
 
 load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN_TEST")
+TOKEN = os.getenv("DISCORD_TOKEN")
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-WELCOME_CHANNEL_ID = 1451924198137008289       # TESTing
-#WELCOME_CHANNEL_ID = 1389679104915406984
+GENERAL_CHAT_ID = 1389679104915406984
+#GENERAL_CHAT_ID = 1451924198137008289      # TESTing
 
-#GENERAL_CHAT_ID = 1389679104915406984
-GENERAL_CHAT_ID_TEST = 1451924198137008289      # TESTing
-
-bot = commands.Bot(command_prefix="/", intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.command()
 async def version(ctx):
@@ -30,13 +27,50 @@ async def on_ready():
     print(f"Logged in as {bot.user}")
 
 @bot.command()
-async def score(ctx):
-    await fun.print_user_score(ctx)
+async def myscore(ctx):
+    await fun.print_user_score(ctx, ctx.author)
+
+
+@bot.command()
+async def score(ctx, *arg_members: discord.Member):
+    # No mentions → show your own score
+    if not arg_members:
+        # score for yourself
+        score = await fun.print_user_score(ctx, ctx.author, do_print=False)
+        print(f"You have no real friends, but hey, at least your score is {score}")
+        return
+
+    users = []
+    output_lines = []
+
+    author_score  = await fun.print_user_score(ctx, ctx.author, do_print=False)
+    users.append((ctx.author.display_name, author_score))                      
+    
+    # scores for all mentioned users
+    for member in arg_members:
+        score = await fun.print_user_score(ctx, member, do_print=False)
+        db_member = fun.get_or_create_member(member)
+        name = fun.clean_nickname(db_member, member.display_name)
+        users.append((name, score))
+
+    # Sort by score
+    users.sort(key=lambda x: x[1], reverse=True)
+
+    output_lines = [
+        f"{name:>15}: {score} ({score_naming[score // 10]})"
+        for name, score in users
+    ]
+
+    await ctx.reply("```\n" + "\n".join(output_lines) + "\n```")
 
 @bot.command()
 async def allscore(ctx):
     output_lines = await fun.print_all_score(bot)
-    await ctx.reply("```\n" + "\n".join(output_lines) + "\n```")
+
+    CHUNK_SIZE = 33
+    for i in range(0, len(output_lines), CHUNK_SIZE):
+        chunk = output_lines[i:i + CHUNK_SIZE]
+        await ctx.reply("```\n" + "\n".join(chunk) + "\n```")
 
 @bot.event
 async def on_message(message):
@@ -54,7 +88,7 @@ async def on_message(message):
 @bot.event
 async def on_member_join(member):
    
-    channel = member.guild.get_channel(WELCOME_CHANNEL_ID)
+    channel = member.guild.get_channel(GENERAL_CHAT_ID)
     if channel:
         await channel.send(welcome_message_public(member.mention) + "\n" + fun.get_random_Kim_quote())
     else:
@@ -68,10 +102,8 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
-    channel = member.guild.get_channel(GENERAL_CHAT_ID_TEST)
-    await channel.send(f"👋 {member.mention} has left the server.")
+    channel = member.guild.get_channel(GENERAL_CHAT_ID)
     await channel.send(await fun.member_left(member))
-
 
 bot.run(TOKEN)
 

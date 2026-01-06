@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import os
 import random
 import discord
+import re 
 
 from datetime import datetime, timedelta
 
@@ -27,8 +28,9 @@ warnings_table = db["Warnings"]
 mute_reasons = db["Mute_reasons"]
 leave_reasons = db["Leave_reasons"]
 
-CREW_GUILD_ID = 1450516692324061320        # TESTING
-#CREW_GUILD_ID = 1389679097692815613
+#CREW_GUILD_ID = 1450516692324061320        # TESTING
+CREW_GUILD_ID = 1389679097692815613
+
 
 async def fetch_user_guild(message, bot):
     guild = message.guild or bot.get_guild(CREW_GUILD_ID)
@@ -74,12 +76,22 @@ async def mute_member(bot, message, user_id, time_to_mute, reason=None):
 def get_all_users():
     return list(socials.find({}).sort("score", -1))
 
-async def print_user_score(ctx, do_print=True):
-    score = get_or_create_member(ctx.message)["score"]
+async def print_user_score(ctx, user, do_print=True):
+    """
+    user can be:
+    - discord.Member
+    - discord.User
+    - int (user_id)
+    """
+
+    member = get_or_create_member(user)
+    score = member["score"]
+
     if do_print:
-        await ctx.reply(f"Your score is {score}")
-    else:
-        return score
+        await ctx.reply(f"Your score is {score}")  
+
+    return score
+
 
 def create_user(message, user_id, guild_id, warning_number, score_deduction):
 
@@ -99,32 +111,45 @@ def create_user(message, user_id, guild_id, warning_number, score_deduction):
 
     return new_member
 
-def get_or_create_member(message, warning_number=0, score_deduction=0):
+def get_or_create_member(source, warning_number=0, score_deduction=0):
     """
-        Search user by id. If it doesnt exist, create it.
-        Return member object
-
+    source can be:
+    - discord.Member
+    - discord.User
+    - discord.Message / Context
+    - int (user_id)
     """
 
-     # -- Find user --
+    CREW_GUILD_ID = "1389679097692815613"
 
-    user_id = message.author.id
-    guild_id = message.guild.id if message.guild else "1389679097692815613"  # CREW GUILD ID
+    # ---- Resolve user_id & guild_id ----
 
-    member = socials.find_one({
-        "user_id": user_id
-    })
+    if isinstance(source, int):
+        user_id = source
+        guild_id = CREW_GUILD_ID
 
+    elif isinstance(source, (discord.Member, discord.User)):
+        user_id = source.id
+        guild_id = source.guild.id if hasattr(source, "guild") and source.guild else CREW_GUILD_ID
+
+    else:  # message or ctx
+        user_id = source.author.id
+        guild_id = source.guild.id if source.guild else CREW_GUILD_ID
+
+    # ---- Find user ----
+
+    member = socials.find_one({"user_id": user_id})
     if member:
         return member
-    
-    # -- Create user --
-    return create_user(message, user_id, guild_id, warning_number, score_deduction)
+
+    # ---- Create user ----
+    return create_user(source, user_id, guild_id, warning_number, score_deduction)
+
 
 def mongodb_generator(collection_name):
 
     total_entries = collection_name.count_documents({})
-    random_entry_id = random.randint(0, total_entries)
+    random_entry_id = random.randint(1, total_entries)
 
     while True:
         random_entry = collection_name.find_one({"id": random_entry_id})
@@ -203,7 +228,7 @@ async def deduct_user_score_n_increase_warnings(bot, author_id, penalty, new_war
             global anyone_blacklisted
             anyone_blacklisted = True
         elif score < 180:
-            time_to_mute = mute_timing.get(score // 10) or 1
+            time_to_mute = (mute_timing.get(score // 10) or 1) + ((9 - (score % 10)) * 2)
             await mute_member(bot, message, author_id, time_to_mute, random_mute_reason())
 
     if penalty >= 0 and not pro_nk_word:
@@ -257,6 +282,16 @@ async def delete_this_message(message):
     print("blacklist, anyone_blacklisted: ", blacklist, anyone_blacklisted)
     await message.delete()
 
+
+def clean_nickname(user, nickname, max_width=15):
+    """keep only ASCII"""
+    cleaned_nickname = re.sub(r"[^\x00-\x7F]", "", nickname)
+
+    if not cleaned_nickname.strip():
+        cleaned_nickname = user['username']
+
+    return cleaned_nickname[:15]
+
 async def print_all_score(bot):
     all_users = get_all_users()
 
@@ -269,6 +304,7 @@ async def print_all_score(bot):
             try:
                 guild = await bot.fetch_guild(user["guild_id"])
             except discord.NotFound:
+                print("guild is None")
                 continue
 
         member = guild.get_member(user["user_id"])
@@ -276,21 +312,24 @@ async def print_all_score(bot):
             try:
                 member = await guild.fetch_member(user["user_id"])
             except discord.NotFound:
+                print(f"{user['username']} is None")
                 continue
 
         nickname = member.nick or member.name
         user_score = user['score']
-        output_lines.append(f"{nickname[0:15]:>17} : {user_score} ({score_naming[user_score//10]})") 
+        nickname_cleaned = clean_nickname(user, nickname)
+        output_lines.append(f"{nickname_cleaned:>15} : {user_score} ({score_naming[user_score//10]})")
+
     return output_lines
 
 
 async def member_left(member):
     #user_record = socials.find_one({"user_id": member.id})
     
-    leave_reason = next(leave_reason_gen)["reason"].format(username=member.name)
+    leave_reason = next(leave_reason_gen)["reason"].format(username=member.mention)
     mute_reason = next(mute_reason_gen)["reason"].format()
 
-    return f"{leave_reason}\nREASON: {mute_reason}"
+    return f"{leave_reason}\n\n*REASON: {mute_reason}*"
 
 
 

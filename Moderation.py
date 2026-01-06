@@ -7,7 +7,7 @@ class Moderation(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    #@commands.has_permissions(moderate_members=True)
+    @commands.has_permissions(moderate_members=True)
     async def schedule_public_execution(self, ctx, member: discord.Member, minutes: int):
         duration = timedelta(minutes=minutes)
 

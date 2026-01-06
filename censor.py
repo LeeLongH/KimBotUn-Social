@@ -7,6 +7,7 @@ censor = {
     ("kim", "jong"): (3, 5, True),
     ("kim", "un"): (3, 5, True),
     ("jong", "un"): (3, 5, True),
+    ("kim"): (3, 1, True),
 
     # 4, 5 to be replaced
 
@@ -23,7 +24,8 @@ censor = {
     ("crypto",): (11, 5, False),
     ("stocks",): (12, 5, False),
 
-    # 12 to be replaced
+        # --- BOT ---
+    ("bot"): (12, 1, True),
 
     # --- DEMOCRACY ---
     ("democracy",): (13, 5, False),
@@ -36,13 +38,8 @@ censor = {
     ("israel",): (17, 15, False),
 
 
-
-
-
     # --- I THINK ---
     ("i", "think"): (16, 1, False),
-    # --- BOT ---
-    ("bot"): (16, 1, True),
     # --- LG TV ---
     ("gae",): (16, 3, False),
     ("gay",): (16, 3, False),
@@ -54,14 +51,10 @@ censor = {
     ("sigma",): (16, 5, False),
     ("alpha",): (16, 3, False),
     ("giga","chad",): (16, 5, False),
-    ("ai",): (16, 3, False),
-    ("sorry",): (16, 3, False),
-    ("welcone",): (16, 1, False),
+    ("ai",): (16, 2, False),
+    ("sorry",): (16, 2, False),
 
-
-
-
-    # --- INCRREASING SCORE ---
+    # --- INCREASING SCORE ---
     ("israhell",): (100, -15, False),
     ("isnotreal",): (100, -15, False),
     ("dprk",): (100, -15, False),
@@ -73,5 +66,7 @@ censor = {
     ("thank","you"): (100, -1, False),
     ("tnx",): (100, -1, False),
     ("thanks",): (100, -1, False),
-    ("Welcome",): (100, -1, False),
+    ("welcome",): (100, -1, False),
+
+    ("NK",): (200, 0, False),
 }
