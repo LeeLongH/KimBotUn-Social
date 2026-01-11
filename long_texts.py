@@ -20,9 +20,7 @@ Your productivity is anticipated.
 
 You have been granted a plot of land and a chance to contribute meaningfully to the Collective Harvest.
 
-Remember:
-- Idle fields invite concern.
-- Full silos bring honor.
+Remember: Idle fields invite concern and full silos bring honor.
 
 Do not worry if you feel watched.
 That feeling means the system is working.
@@ -41,6 +39,7 @@ Reminder: Wheat is temporary but obedience must be constantly displayed.
 
 Farm while you still can.
 Failure to do that will result in disciplinary actions.
+Enjoy your temporary stay!
 """,
 """
 # 🌾Transmission recieved from KimBot Un 🌾
@@ -58,21 +57,6 @@ And remember — Loyalty must be shown daily.
 Enjoy your stay. :corn:
 """,
 """
-# 🌾 Official notice — Cooperative registry 🌾
-
-Farmer {member_name}, your presence has been recorded.
-
-Your farm will be evaluated on:
-- Yield consistency
-- Timer obedience
-- Attitude toward the system
-
-Irregular production will be noted.
-Repeated procrastination will be remembered.
-
-And remember, Compliance grows faster than wheat.
-""",
-"""
 # 🌾 Welcome, {member_name} 🌾
 
 You were not randomly selected.
@@ -82,8 +66,6 @@ From this moment forward:
 - Your idle machines will be questioned.
 - Your empty fields will raise concern.
 - And your silence will be interpreted as agreement.
-
-May your farming me done in unwavering loyalty to the eternal stability of the Democratic People’s Republic of Korea.
 """,
 """
 # 🌾A new farmer has joined the Collective 🌾
@@ -166,32 +148,32 @@ Remember, idle farm invites questions!
 
 def welcome_message_public(member_name):
 
-    #template = random.choice(welcome_message_public_list)
-    template = random.choice(welcome_message_public_list[0], welcome_message_public_list[5])
+    template = random.choice(welcome_message_public_list)
     return template.format(member_name=member_name)
 
 mute_timing = {
-    17: 0.1,
-    16: 0.4,
-    15: 0.7,
-    14: 1,
-    13: 1.5,
-    12: 2,
-    11: 3,
-    10: 4,
-    9: 5,
-    8: 6,
-    7: 8,
-    6: 10,
-    5: 20,
-    4: 30,
-    3: 40,
-    2: 50,
-    1: 60 
+    17: 6,
+    16: 24,
+    15: 42,
+    14: 60,
+    13: 90,
+    12: 120,
+    11: 180,
+    10: 240,
+    9: 300,
+    8: 360,
+    7: 480,
+    6: 600,
+    5: 1200,
+    4: 1800,
+    3: 2400,
+    2: 3000,
+    1: 3600 
 }
 
 BOT_VERSION = \
 """
+1.4 - Re-educating members by deleting their messages
 1.3 - !myscore & !score @person1 @person2 @personN
 1.2 - goodbye message
 1.1 - scoring and muting adjusted, IC excluded from muting
@@ -231,7 +213,7 @@ score_naming = {
     12: "❌ Openly Disloyal Citizen",
     11: "❌ Persistently Disloyal Citizen",
     10: "❗❗❗Suspected Puppet regime spy",
-    9: "❗❗❗Puppet regime spy",
+    9: "❗❗❗Confirmed Puppet regime spy",
     8: "☢️☢️ Counter-Revolutionary rat",
     7: "☢️☢️ Confirmed Counter-Revolutionary rat",
     6: "🪓🪓🪓 Imperialist Disruptor",
@@ -241,3 +223,62 @@ score_naming = {
     2: "☠️☠️☠️ Traitor to the State",
     1: "☠️☠️☠️ Ultimate Traitor to the State"
 }
+
+"""
+# 🌾 Official notice — Cooperative registry 🌾
+
+Farmer {member_name}, your presence has been recorded.
+
+Your farm will be evaluated on:
+- Yield consistency
+- Timer obedience
+- Attitude toward the system
+
+Irregular production will be noted.
+Repeated procrastination will be remembered.
+
+And remember, Compliance grows faster than wheat.
+"""
+
+
+send_user_bully_message = [
+"Obey the Collective or be quietly removed from existance.", 
+"Noncompliance leads to administrative disappearance.", 
+"Failure will result in your name being… forgotten", 
+"Obey the Collective or face corrective measures.",
+"Regime will not tolerate your misbehaviour. Comply or depart",
+"Continued deviation will require further adjustment.",
+"Your contribution has been reviewed and rejected.",
+"At the end, the system will win, and you will lose",
+"You appear to be struggling with approved communication",
+"Your message conflicted with Cooperative standards.",
+"How nice it is, now that you can't be heard yapping in the server."
+]
+
+list_of_redeeming_text = [
+"I thank KimBot Un for supervising my plow and my thoughts.",
+"KimBot Un’s wisdom exceeds my own understanding of the land.",
+"My barn, my plow, my crops exist solely to glorify the regime.",
+"Through compliance, I am worthy of visibility in the Collective.",
+"Every achievement of the people is a testament to the Party’s guidance and ideology.",
+"I acknowledge my recent failure to meet the expectations of the Regime. This was due to personal inefficiency, not systemic error.",
+"I acknowledge my recent failure to meet the expectations of the Regime. I accept correction and will adjust my behavior accordingly.",
+"I admit my behaviour was premature, unnecessary, and poorly timed. The Regime was correct to intervene.",
+"I recognize that my recent message disrupted harmony. I apologize to the Collective and thank the Regime for its correction.",
+"My previous action did not align with collective expectations. I submit this apology without reservation.",
+"My my hands be rubbed in dust, I have let the Collective down and i deeply regret it."
+]
+
+
+"""
+
+"",
+"",
+"",
+"",
+"",
+"",
+Your message has been removed due to insufficient Social Score.
+
+
+"""

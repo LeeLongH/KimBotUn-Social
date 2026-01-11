@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+
 import os
 import random
 import discord
@@ -10,26 +10,22 @@ from dotenv import load_dotenv
 load_dotenv()
 from censor import *
 from long_texts import *
+from utils.control import *
+from punish import * 
 
-uri = os.getenv("MONGODB_TOKEN")
-if not uri:
+from utils.generator import mongodb_generator
+import mongo as mon
+
+import punish as pun
+
+mute_reasons = db["Mute_reasons"]
+
+if not mongo_uri:
     raise RuntimeError("MONGODB_TOKEN ni nastavljen!")
 
-client = MongoClient(uri)
-
-# fun.py
-anyone_blacklisted = False
-blacklist = []
-
-db = client["KimBotUn"]
 socials = db["Socials"]
 quotes = db["Kim_quotes"]
 warnings_table = db["Warnings"]
-mute_reasons = db["Mute_reasons"]
-leave_reasons = db["Leave_reasons"]
-
-#CREW_GUILD_ID = 1450516692324061320        # TESTING
-CREW_GUILD_ID = 1389679097692815613
 
 
 async def fetch_user_guild(message, bot):
@@ -60,18 +56,19 @@ async def mute_member(bot, message, user_id, time_to_mute, reason=None):
 
     try:
         await member.timeout(
-            timedelta(minutes=time_to_mute),
+            timedelta(seconds=time_to_mute),
             reason=reason
         )
 
         await message.reply(
             f"{member.mention} has been sent to a labor camp for re-education "
-            f"for **{time_to_mute} minute{'s' if time_to_mute != 1 else ''}**.\n"
+            f"for **{time_to_mute} seconds**.\n"
             f"**Reason:** {reason or 'Not deserving to know the reason.'}"
         )
     except:
         print(f"SYS: Cannot mute {member.mention}")
-        pass
+        return False
+    return True
 
 def get_all_users():
     return list(socials.find({}).sort("score", -1))
@@ -85,6 +82,7 @@ async def print_user_score(ctx, user, do_print=True):
     """
 
     member = get_or_create_member(user)
+    
     score = member["score"]
 
     if do_print:
@@ -92,10 +90,12 @@ async def print_user_score(ctx, user, do_print=True):
 
     return score
 
+mute_reason_gen = mongodb_generator(mute_reasons)
 
 def create_user(message, user_id, guild_id, warning_number, score_deduction):
 
-    username = message.author.name
+    username = message.name if hasattr(message, "name") else message.author.name
+
     score = 200 - score_deduction
 
     new_member = {
@@ -120,7 +120,7 @@ def get_or_create_member(source, warning_number=0, score_deduction=0):
     - int (user_id)
     """
 
-    CREW_GUILD_ID = "1389679097692815613"
+
 
     # ---- Resolve user_id & guild_id ----
 
@@ -145,24 +145,7 @@ def get_or_create_member(source, warning_number=0, score_deduction=0):
     # ---- Create user ----
     return create_user(source, user_id, guild_id, warning_number, score_deduction)
 
-
-def mongodb_generator(collection_name):
-
-    total_entries = collection_name.count_documents({})
-    random_entry_id = random.randint(1, total_entries)
-
-    while True:
-        random_entry = collection_name.find_one({"id": random_entry_id})
-
-        yield random_entry
-
-        random_entry_id += 1
-        if random_entry_id > total_entries:
-            random_entry_id = 1
-        
 quote_gen = mongodb_generator(quotes)
-mute_reason_gen = mongodb_generator(mute_reasons)
-leave_reason_gen = mongodb_generator(leave_reasons)
 
 def get_random_Kim_quote():
     return next(quote_gen)["quote"]
@@ -175,8 +158,6 @@ def get_score_n_warnings(message):
     member = get_or_create_member(message) 
     return (member["score"], member["warnings"])
 
-def random_mute_reason():
-    return next(mute_reason_gen)["reason"]
 
 def increase_pro_nk_words(author_id, pro_nk_word):
     now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -223,13 +204,16 @@ async def deduct_user_score_n_increase_warnings(bot, author_id, penalty, new_war
     if penalty > 1 and message:
         member = get_or_create_member(message)
         score = member["score"]
-        if score < 100:
-            blacklist.append(member["user_id"])
-            global anyone_blacklisted
-            anyone_blacklisted = True
-        elif score < 180:
+
+        if score < 180:
             time_to_mute = (mute_timing.get(score // 10) or 1) + ((9 - (score % 10)) * 2)
-            await mute_member(bot, message, author_id, time_to_mute, random_mute_reason())
+            person_can_be_muted = await mute_member(bot, message, author_id, time_to_mute, next(mute_reason_gen)["reason"])
+            
+            if not person_can_be_muted:
+                score -= 10
+
+        if score < 160:
+            pun.blackdict.update({member["user_id"] : "uninformed"})
 
     if penalty >= 0 and not pro_nk_word:
         return
@@ -258,6 +242,9 @@ async def check_n_do_censoring(bot, message):
                 await deduct_user_score_n_increase_warnings(bot, message.author.id, penalty, 0, "", words_pair_to_censor[0])
                 continue
 
+            if penalty < 0 and (message.channel == 1390260819853312092 or message.channel == 1389928255213277324):
+                return
+
             appropriate_warnings = list(warnings_table.find({"id": rule_id}))
             warning_to_give = random.choice(appropriate_warnings)
 
@@ -269,18 +256,6 @@ async def check_n_do_censoring(bot, message):
                 await deduct_user_score_n_increase_warnings(bot, message.author.id, 0, +1, message, "")
                 if rule_id != 16:
                     await message.reply("Imaginary state mentioned, educate yourself!" if warning_to_give["text"].startswith("Imaginary state mentioned") else  warning_to_give["text"] + "\n" * 2 + "*This is your first and last warning before i start deducting you social score.*")  
-
-async def delete_this_message(message):
-    global anyone_blacklisted
-    redeeming_message = "I became DPRK fun"
-    if message.content == redeeming_message:
-        blacklist.remove(message.author.id)
-
-        anyone_blacklisted = bool(blacklist)
-        return
-    
-    print("blacklist, anyone_blacklisted: ", blacklist, anyone_blacklisted)
-    await message.delete()
 
 
 def clean_nickname(user, nickname, max_width=15):
@@ -323,13 +298,6 @@ async def print_all_score(bot):
     return output_lines
 
 
-async def member_left(member):
-    #user_record = socials.find_one({"user_id": member.id})
-    
-    leave_reason = next(leave_reason_gen)["reason"].format(username=member.mention)
-    mute_reason = next(mute_reason_gen)["reason"].format()
-
-    return f"{leave_reason}\n\n*REASON: {mute_reason}*"
 
 
 

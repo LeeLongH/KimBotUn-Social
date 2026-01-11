@@ -7,8 +7,9 @@ censor = {
     ("kim", "jong"): (3, 5, True),
     ("kim", "un"): (3, 5, True),
     ("jong", "un"): (3, 5, True),
-    ("kim"): (3, 1, True),
-
+    ("kim",): (3, 2, True),
+    ("bot",): (12, 2, True),
+    ("kimbot",): (12, 2, True),
     # 4, 5 to be replaced
 
     # --- USA ---
@@ -24,9 +25,6 @@ censor = {
     ("crypto",): (11, 5, False),
     ("stocks",): (12, 5, False),
 
-        # --- BOT ---
-    ("bot"): (12, 1, True),
-
     # --- DEMOCRACY ---
     ("democracy",): (13, 5, False),
     ("elections",): (14, 5, False),
@@ -34,30 +32,38 @@ censor = {
     # --- PHONES ---
     ("iphone",): (15, 5, False),
 
+    # --- 16 ---
+
     # --- GAZA ---
     ("israel",): (17, 15, False),
 
+    ("sorry",): (18, 2, False),
 
-    # --- I THINK ---
-    ("i", "think"): (16, 1, False),
-    # --- LG TV ---
-    ("gae",): (16, 3, False),
-    ("gay",): (16, 3, False),
-    ("trans",): (16, 3, False),
-    ("homo",): (16, 3, False),
-    ("lesbian",): (16, 3, False),
-    ("daddy",): (16, 3, False),
-    ("mommy",): (16, 3, False),
+    ("daddy",): (19, 3, False),
+    ("mommy",): (19, 3, False),
+    ("gae",): (19, 3, False),
+    ("gay",): (19, 3, False),
+    ("trans",): (19, 3, False),
+    ("homo",): (19, 3, False),
+    ("lesbian",): (19, 3, False),
     ("sigma",): (16, 5, False),
     ("alpha",): (16, 3, False),
     ("giga","chad",): (16, 5, False),
-    ("ai",): (16, 2, False),
-    ("sorry",): (16, 2, False),
+
+    ("ai",): (20, 2, False),
+
+    # --- I THINK ---
+    #("i", "think"): (16, 1, False),
+    # --- LG TV ---
+    
+ 
+    ("anime",): (16, 2, False),
 
     # --- INCREASING SCORE ---
     ("israhell",): (100, -15, False),
     ("isnotreal",): (100, -15, False),
-    ("dprk",): (100, -15, False),
+    ("palestine",): (100, -5, False),
+    ("dprk",): (100, -3, False),
     ("revolution",): (100, -10, False),
     ("juche",): (100, -15, False),
     ("victory",): (100, -5, False),
@@ -67,6 +73,7 @@ censor = {
     ("tnx",): (100, -1, False),
     ("thanks",): (100, -1, False),
     ("welcome",): (100, -1, False),
+    ("good",): (100, -1, False),
 
-    ("NK",): (200, 0, False),
+    #("NK",): (200, 0, False),
 }

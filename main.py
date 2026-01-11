@@ -1,21 +1,14 @@
-import os
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 
 import mongodb as fun
 from long_texts import *
+from utils.control import *
+import punish as pun
 
-load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
-intents = discord.Intents.default()
-intents.message_content = True
-intents.members = True
+from utils.bot_instance import bot
 
-GENERAL_CHAT_ID = 1389679104915406984
-#GENERAL_CHAT_ID = 1451924198137008289      # TESTing
-
-bot = commands.Bot(command_prefix="!", intents=intents)
+global blacklist
 
 @bot.command()
 async def version(ctx):
@@ -23,7 +16,7 @@ async def version(ctx):
 
 @bot.event
 async def on_ready():
-    await bot.load_extension("Moderation")
+    await bot.load_extension("utils.Moderation")
     print(f"Logged in as {bot.user}")
 
 @bot.command()
@@ -37,7 +30,7 @@ async def score(ctx, *arg_members: discord.Member):
     if not arg_members:
         # score for yourself
         score = await fun.print_user_score(ctx, ctx.author, do_print=False)
-        print(f"You have no real friends, but hey, at least your score is {score}")
+        await ctx.reply(f"You have no real friends, but hey, at least your score is {score}")
         return
 
     users = []
@@ -74,13 +67,16 @@ async def allscore(ctx):
 
 @bot.event
 async def on_message(message):
-    if message.author == bot.user:
+    # skip IC channel
+    if message.author == bot.user or message.channel.id == IC_CHANNEL:
         return
 
-    #if fun.anyone_blacklisted and message.author.id in fun.blacklist:
-    #    await fun.delete_this_message(message)
-
     await fun.check_n_do_censoring(bot, message)
+
+    if len(pun.blackdict) > 0 and message.author.id in pun.blackdict:
+        #print("Blacklisted")
+        await pun.delete_this_message(message.author.id, message)
+        #return
 
     # Make sure commands still work
     await bot.process_commands(message)
